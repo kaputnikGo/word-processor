@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<!-- Webpack and npm have both been setup, so you can just run 'npm install'
+and 'webpack --watch' if you ever clone this repo -->
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge;"/>
+    <link href="https://unpkg.com/cirrus-ui" type="text/css" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="styles/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+    <link rel="shortcut icon" href="ml.gif" type="image/gif">
+    <title>word processor</title>
+
+</head>
+<body class="bg-yellow-300">
+    
+    <div id="video-1" class="videoContainer"><video/></div>
+    <div id="video-2" class="videoContainer"><video/></div>
+    <div id="video-3" class="videoContainer"><video/></div>
+    <div id="video-4" class="videoContainer"><video/></div>
+    <div id="video-5" class="videoContainer"><video/></div>
+    <div id="video-6" class="videoContainer"><video/></div>
+    
+    <section>
+        <div>
+            <div class="row">
+                <div class="col-2" id="leftSide">
+                    <h6 class="label">PLAYER</h6>
+                    <div class="input-control my-2">
+                        <div id="playControls" class="form-group">
+                            <button id="playButton" class="form-group-btn btn-primary btn-small bg-gray-700">&#9658;</button>
+                            <button id="stopButton" class="form-group-btn btn-primary btn-small bg-gray-700">&#9209;</button>
+                            <input id="bpm" class="form-group-input input-small" type="number" step="1" value="60">
+                            <label class="form-group-label label-small">wpm</label>
+                            <input id="crossfade" class="form-group-input input-small u-none" type="number" step="1" value="0" min="0">
+                            <label class="form-group-label label-small u-none">crossfade(ms)</label>
+                            <button id="enableVideo" class="tooltip tooltip--left form-group-btn btn-primary btn-small bg-black" data-tooltip="enable video mode (and wait)">v</button>
+                            <button id="downloadSequencers" class="tooltip tooltip--left form-group-btn btn-info btn-small bg-black" data-tooltip="save this composition">dl</button>
+                            <button id="expandButton" class="form-group-btn btn-primary btn-small bg-gray-700">&harr;</button>
+                        </div>
+                    </div>
+                    <!--<button id="recordButton">*</button><a id="downloadLink"></a>-->
+                    <div id="stages">
+                    </div>
+                    <label for="loadComposition">
+                        <span>load a saved composition</span>
+                        <input type="file" id="loadComposition" style="display:none">
+                    </span>
+                </div>
+                <div class="col-8 " id="middleSide">
+                    <h6 class="label">TRANSCRIPT</h6>
+                    <div class="input-control">
+                        <div class="form-group">
+                            <select id="transcriptChooser" class="select input-small form-group-input text-indigo-500 bg-gray-000" placeholder="load a transcript"></select>
+                            <button id="reload" class="tooltip tooltip--bottom form-group-btn btn-primary btn-small bg-green-600" data-tooltip="reload transcript">&#x21bb;</button>
+                            <button id="selectAllButton" class="tooltip tooltip--bottom form-group-btn btn-primary btn-small bg-gray-700" data-tooltip="(un)select everything">&sext;</button>
+                            <select id="stageChooser" class="select input-small form-group-input text-gray-000 bg-purple-500"></select>
+                            <button id="sendButton" class="tooltip tooltip--left form-group-btn btn-primary btn-small bg-purple-500" data-tooltip="send selections to player">&#9986;</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div id="transcript" class="p-4 u-overflow-auto" style="height: 600px;"></div>
+                    </div>
+                </div>
+                <div class="col-2" id="rightSide">
+                    <h6 class="label">FILTER/SORT</h6>
+                    <div class="card bg-pink-200 u-none" id="wordInfo">
+                        <small>
+                        <div class="card__header"><p class="px-3"></p></div>
+                        <button id="makePhrase" class="mx-2 btn-primary btn-xsmall bg-purple-600">make phrase</button>
+                        <div class="content pt-3">
+                            <table class="table small px-3">
+                                <tbody>
+                                    <tr class="info_length">
+                                        <th>length:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_features rms">
+                                        <th>energy:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_features zcr">
+                                        <th>zcr:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_features spectralSlope">
+                                        <th>spectral slope:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_features mfcc">
+                                        <th>mfcc:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_duration">
+                                        <th>duration:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_time">
+                                        <th>time:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_time2">
+                                        <th>(sentence)</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_syllables">
+                                        <th>syllables:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_syllableLengths">
+                                        <th></th>
+                                        <td class="u-text-left"></td>
+                                    </tr>                                    
+                                    <tr class="info_syllableSpeed">
+                                        <th></th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_phones">
+                                        <th>phonemes:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_phoneList">
+                                        <th></th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_phoneSpeed">
+                                        <th></th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_pos">
+                                        <th>pos:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                    <tr class="info_letters">
+                                        <th>letters:</th>
+                                        <td class="u-text-left"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        </small>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="modal modal-animated--zoom-in" id="filter-modal">
+        <div class="modal-content bg-pink-300" role="document">
+            <div class="modal-header">
+                <a href="#anchor-to-background" class="u-pull-right" aria-label="Close">
+                    <span class="icon">
+                        x
+                    </span>
+                </a>
+            </div>
+            <div class="modal-body content">
+                <div class="col-lg-6 word">
+                    <label>Word</label>
+                    <input class="input-xsmall my-2 find-word" value="">
+                    <span class="info">for multiple words, separate with commas.<br/>use a hyphen to match parts of words (eg. commun-)</span>
+                    <button class="btn-success btn-xsmall keep">keep</button>
+                    <button class="btn-success btn-xsmall remove">remove</button>
+                    <div class="divider"></div>
+                    <input class="input-xsmall my-2 common-words" type="number" value="5">
+                    <span class="info">the most common N words</span>
+                    <button class="btn-success btn-xsmall keep-common">keep</button>
+                    <button class="btn-success btn-xsmall remove-common">remove</button>
+                    <div class="divider"></div>
+                    <button class="btn-info btn-xsmall alpha">sort A-Z</button>
+                    <button class="btn-info btn-xsmall r-alpha">sort Z-A</button>
+                </div>
+                <div class="col-lg-6 duration">
+                    <label>Duration</label>
+                    <input class="input-xsmall my-2" type="number" step="0.001" value="0">
+                    <button class="btn-success btn-xsmall shorter">keep shorter words</button>
+                    <button class="btn-success btn-xsmall longer">keep longer words</button>
+                    <button class="btn-success btn-xsmall within">keep words within 0.1s</button>
+                    <div class="divider"></div>
+                    <button class="btn-info btn-xsmall short-to-long">sort short to long</button>
+                    <button class="btn-info btn-xsmall long-to-short">sort long to short</button>
+                </div>
+                <div class="col-lg-6 time">
+                    <label>Time</label>
+                    <span class="info">Filter across the whole transcript</span>
+                    <div class="form-group global">
+                        <label class="form-group-label label-small">keep</label>
+                        <button class="form-group-btn btn-primary btn-small before">before</button>
+                        <button class="form-group-btn btn-primary btn-small after">after</button>
+                        <input class="input-small form-group-input" type="number" step=".01" value="0">
+                    </div>
+                    <div class="divider"></div>
+                    <span class="info">Filter within each sentence in the transcript</span>
+                    <div class="form-group local">
+                        <label class="form-group-label label-small">keep</label>
+                        <button class="form-group-btn btn-primary btn-small before">before</button>
+                        <button class="form-group-btn btn-primary btn-small after">after</button>
+                        <input class="input-small form-group-input" type="number" step=".01" value="0">
+                    </div>
+                    <div class="form-group position">
+                        <label class="form-group-label label-small">keep</label>
+                        <button class="form-group-btn btn-primary btn-small before">before position</button>
+                        <button class="form-group-btn btn-primary btn-small after">after position</button>
+                        <input class="input-small form-group-input" type="number" step="1" value="1" min="1">
+                    </div>
+                    <div class="divider"></div>
+                    <button class="btn-info btn-xsmall chron">chronological</button>
+                    <button class="btn-info btn-xsmall r-chron">reverse chronological</button>
+                    <button class="btn-info btn-xsmall chron2">chronological (in sentence)</button>
+                    <button class="btn-info btn-xsmall r-chron2">reverse chronological (in sentence)</button>
+                    <button class="btn-info btn-xsmall chron3">position of word in sentence</button>
+                    <button class="btn-info btn-xsmall r-chron3">reverse position of word in sentence</button>
+                </div>
+                <div class="col-lg-6 length">
+                    <label>Length</label>
+                    <input class="input-xsmall my-2" type="number" step="1" value="0">
+                    <button class="btn-success btn-xsmall shorter">keep shorter words</button>
+                    <button class="btn-success btn-xsmall longer">keep longer words</button>
+                    <button class="btn-success btn-xsmall within">keep same length words</button>
+                    <div class="divider"></div>
+                    <button class="btn-info btn-xsmall short-to-long">sort short to long</button>
+                    <button class="btn-info btn-xsmall long-to-short">sort long to short</button>
+                </div>
+                <div class="col-lg-6 phonemes">
+                    <label>Phonemes</label>
+                    <!--
+                    <input class="input-xsmall my-2" type="number" step="1" value="0">
+                    <button class="btn-success btn-xsmall shorter">keep less phonemes</button>
+                    <button class="btn-success btn-xsmall longer">keep more phonemes</button>
+                    <button class="btn-success btn-xsmall within">keep same number of phonemes</button>
+                    <div class="divider"></div>
+                    <button class="btn-info btn-xsmall short-to-long">sort less to more</button>
+                    <button class="btn-info btn-xsmall long-to-short">sort more to less</button>
+                    <button class="btn-info btn-xsmall long-to-short">sort by phoneme</button>
+                    <button class="btn-info btn-xsmall long-to-short">sort by phoneme (reverse)</button>
+                    <div class="divider"></div>
+                    -->
+                    <div class="form-group filter">
+                        <label class="form-group-label label-small">find</label>
+                        <input class="input-small form-group-input" value="">
+                        <select class="select input-small form-group-input">
+                            <option value="start">at start</option>
+                            <option value="end">at end</option>
+                            <option value="anywhere">anywhere</option>
+                        </select>
+                        <button class="form-group-btn btn-primary btn-small">keep</button>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="form-group extract">
+                        <label class="form-group-label label-small">extract</label>
+                        <input class="input-small form-group-input num" type="number" step="1" value="3">
+                        <select class="select input-small form-group-input">
+                            <option value="starting">at start</option>
+                            <option value="ending">at end</option>
+                            <option value="from">from</option>
+                            <option value="reset">reset</option>
+                        </select>
+                        <input class="input-small form-group-input u-none from" type="number" step="1" value="1">
+                        <button class="form-group-btn btn-primary btn-small this">this</button>
+                        <button class="form-group-btn btn-primary btn-small all">all</button>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="form-group monster">
+                        <label class="form-group-label label-small">monster</label>
+                        <input class="input-small form-group-input" value="">
+                        <button class="form-group-btn btn-primary btn-small">go</button>
+                    </div>
+                    see: <a href="http://www.speech.cs.cmu.edu/cgi-bin/cmudict" target="_new">CMU dict</a>
+                </div>
+                <div class="col-lg-6 syllables">
+                    <label>Syllables</label>
+                    <div class="form-group num-syllables">
+                        <label class="form-group-label label-small">number of syllables</label>
+                        <select class="select input-small form-group-input">
+                            <option value="less than">less than</option>
+                            <option value="more than">more than</option>
+                            <option value="exactly" selected>exactly</option>
+                        </select>
+                        <input class="input-small form-group-input" type="number" value="">
+                        <button class="form-group-btn btn-primary btn-small">keep</button>
+                    </div>
+                    <div class="form-group stress">
+                        <label class="form-group-label label-small">stressed syllable</label>
+                        <input class="input-small form-group-input" value="">
+                        <select class="select input-small form-group-input">
+                            <option value="first">first</option>
+                            <option value="last">last</option>
+                            <option value="custom" selected>at position</option>
+                        </select>
+                        <button class="form-group-btn btn-primary btn-small">keep</button>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="form-group extract">
+                        <label class="form-group-label label-small">extract</label>
+                        <input class="input-small form-group-input num" type="number" step="1" value="3">
+                        <select class="select input-small form-group-input">
+                            <option value="starting">at start</option>
+                            <option value="ending">at end</option>
+                            <option value="from">from</option>
+                            <option value="reset">reset</option>
+                        </select>
+                        <input class="input-small form-group-input u-none from" type="number" step="1" value="1">
+                        <button class="form-group-btn btn-primary btn-small this">this</button>
+                        <button class="form-group-btn btn-primary btn-small all">all</button>
+                    </div>
+                    <div class="divider"></div>
+                    <button class="btn-info btn-xsmall fast-to-slow">sort fast to slow</button>
+                    <button class="btn-info btn-xsmall slow-to-fast">sort slow to fast</button>
+                </div>
+                <div class="col-lg-6 pos">
+                    <label>Parts of Speech</label>
+                    <input class="input-small my-2" value="">
+                    <button class="btn-success btn-small keep">keep</button>
+                    <button class="btn-success btn-small remove">remove</button>
+                    <span class="info">a part of speech is like #Noun</span>
+                    <span class="info">define a combination like #Noun+#Plural</span>
+                    <span class="info">for an either-or, so #Noun,#Plural</span>
+                    <span class="info">for phrase, separate words with spaces: #Noun #Verb</span>
+                    <span class="info">you can include words in your phrase: #Adjective computer</span>
+                    <div class="divider"></div>
+                    <button class="btn-success btn-small noun-phrases">noun phrases</button>
+                </div>
+                <div class="col-lg-6 letters">
+                    <label>Letters</label>
+                    <input class="input-small my-2" value="">
+                    <button class="btn-success btn-small keep">keep</button>
+                    <span class="info">Words with at least this many of each letter</span>
+                </div>
+                <div class="col-lg-6 audioFeatures">
+                    <label>Audio features</label>
+                    <div class="divider"></div>
+                    <label class="label-small">Energy</label>
+                    <button class="btn-info btn-xsmall rms-asc">low to high</button>
+                    <button class="btn-info btn-xsmall rms-desc">high to low</button>
+                    <div class="divider"></div>
+                    <label class="label-small">Pitchiness</label>
+                    <button class="btn-info btn-xsmall zcr-asc">high to low</button>
+                    <button class="btn-info btn-xsmall zcr-desc">low to high</button>
+                    <div class="divider"></div>
+                    <label class="label-small">Spectral Slope</label>
+                    <button class="btn-info btn-xsmall ss-asc">low to high</button>
+                    <button class="btn-info btn-xsmall ss-desc">high to low</button>
+                    <div class="divider"></div>
+                    <label class="label-small">MFCC</label>
+                    <button class="btn-info btn-xsmall mfcc-asc">low to high</button>
+                    <button class="btn-info btn-xsmall mfcc-desc">high to low</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <small>include any words before and after?</small>
+                <div class="form-group leading-trailing">
+                    <label class="form-group-label label-small">before</label>
+                    <input class="input-small form-group-input before" type="number" value="0">
+                    <label class="form-group-label label-small">after</label>
+                    <input class="input-small form-group-input after" type="number" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="clippy"><a href="word-processor-0.1.txt" download><img src="clipppy.png"></a></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="https://unpkg.com/compromise"></script>
+    <script src="https://unpkg.com/meyda@5.2.2/dist/web/meyda.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js"></script>
+    <script src="scripts/jquery.drag.js"></script>
+    <script src="scripts/sequencer.js"></script>
+    <script src="scripts/transcript.js"></script>
+    <script src="scripts/filters.js"></script>
+    <script src="scripts/stage.js"></script>
+    <script type="text/javascript" src="scripts/main.js"></script>
+
+</body>
+</html>
